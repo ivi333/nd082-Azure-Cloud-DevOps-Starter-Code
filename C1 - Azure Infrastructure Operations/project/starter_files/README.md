@@ -17,7 +17,19 @@ For this project, you will write a Packer template and a Terraform template to d
 4. Install [Terraform](https://www.terraform.io/downloads.html)
 
 ### Instructions
-**Your words here**
+1. Create Policy using `azurepolicy-tag.rules.json` and `azurepolicy-tag.params.json` 
+
+```
+#Create the policy definition
+az policy definition create --name tagging-policy --display-name "Require a tag on resources" \ --description "Enforces existence of a tag. Does not apply to resource groups." --rules azurepolicy-tag.rules.json --params azurepolicy-tag.params.json --mode All
+
+#Show the policy
+az policy definition show --name "tagging-policy"
+
+```
+
+2. Assign Policy to the full subscription
+
 
 ### Output
 **Your words here**
