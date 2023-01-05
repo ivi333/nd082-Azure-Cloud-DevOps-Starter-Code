@@ -60,7 +60,7 @@ terraform apply
 terraform destroy
 ```
 
-##Customize terraform
+## Customize terraform
 
 `variables.tf` provides the following customizable variables:
 - `prefix:` Use a prefix for all resources created in azure
@@ -72,7 +72,7 @@ terraform destroy
 - `packer_resource_group_name:` Packer Resource group where image was created (It might differ from general resource group )
 - `virtual_machines_count:` Number of VMs deployment 
 
-##Customize packer
+## Customize packer
 `server.json` provides the following customizable variables via `environment variable` or `packer -var 'key=value'`:
 - `ARM_CLIENT_ID:` Azure client ID
 - `ARM_CLIENT_SECRET:` Azure Client Secret
