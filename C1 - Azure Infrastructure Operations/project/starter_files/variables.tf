@@ -21,3 +21,13 @@ variable "createdBy" {
   description = "Created by User"
   default = "IvanG"
 }
+
+variable "packer_image_name" {
+  description = "Name of the Packer image"
+  default     = "myPackerImage"
+}
+
+variable "packer_resource_group_name" {
+  description = "Name of the resource group in which the Packer image will be created"
+  default     = "udacity"
+}

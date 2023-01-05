@@ -2,6 +2,7 @@ provider "azurerm" {
   features {}
 }
 
+#resource group
 resource "azurerm_resource_group" "main" {
   name     = "${var.prefix}-resources"
   location = var.location
@@ -10,6 +11,7 @@ resource "azurerm_resource_group" "main" {
   }
 }
 
+#public ip
 resource "azurerm_public_ip" "main" {
   name                = "${var.prefix}-publicIP"
   resource_group_name = azurerm_resource_group.main.name
@@ -20,6 +22,7 @@ resource "azurerm_public_ip" "main" {
   }
  }
 
+#Networking
 resource "azurerm_virtual_network" "main" {
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/22"]
@@ -104,6 +107,7 @@ resource "azurerm_subnet_network_security_group_association" "main" {
   network_security_group_id = azurerm_network_security_group.main.id
 }
 
+#Availability set
 resource "azurerm_availability_set" "main" {
   name                = "${var.prefix}-availability-sets"
   location            = azurerm_resource_group.main.location
@@ -114,9 +118,20 @@ resource "azurerm_availability_set" "main" {
   }
 }
 
-/*resource "azurerm_linux_virtual_machine" "main" {
+data "azurerm_resource_group" "image" {
+  name                = var.packer_resource_group_name
+}
+data "azurerm_image" "image" {
+  name                = var.packer_image_name
+  resource_group_name = data.azurerm_resource_group.image.name
+}
+
+
+#Virtual machine
+resource "azurerm_linux_virtual_machine" "main" {
   name                            = "${var.prefix}-vm"
   resource_group_name             = azurerm_resource_group.main.name
+  availability_set_id             = azurerm_availability_set.main.id
   location                        = azurerm_resource_group.main.location
   size                            = "Standard_B1s"
   admin_username                  = var.username
@@ -126,18 +141,50 @@ resource "azurerm_availability_set" "main" {
     azurerm_network_interface.main.id,
   ]
 
-  source_image_reference {
+  /*source_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
     sku       = "18.04-LTS"
     version   = "latest"
-  }
+  }*/
+
+  source_image_id = data.azurerm_image.image.id
 
   os_disk {
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
   }
+
   tags = {
     createdBy = var.createdBy
   }
-}*/
+}
+
+#Load Balancer
+resource "azurerm_lb" "main" {
+  name                = "${var.prefix}-loadbalancer"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+
+  frontend_ip_configuration {
+    name                          = "${var.prefix}-primary"
+    public_ip_address_id          = azurerm_public_ip.main.id
+  }
+
+  tags = {
+    createdBy = var.createdBy
+  }
+}
+
+resource "azurerm_lb_backend_address_pool" "main" {
+  loadbalancer_id = azurerm_lb.main.id
+  name            = "${var.prefix}-backend-pool"
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "main" {
+  network_interface_id    = azurerm_network_interface.main.id
+  ip_configuration_name   = "internal"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.main.id
+
+}
+
