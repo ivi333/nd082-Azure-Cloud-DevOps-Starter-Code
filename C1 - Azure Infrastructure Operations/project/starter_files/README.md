@@ -17,7 +17,7 @@ For this project, you will write a Packer template and a Terraform template to d
 
 
 ### Instructions
-1. Create Policy using `azurepolicy-tag.rules.json` and `azurepolicy-tag.params.json` 
+1. Create Azure Policy definition  
 
 ```
 #Create the policy definition
@@ -27,6 +27,7 @@ az policy definition create --name tagging-policy --display-name "Require a tag 
 az policy definition show --name "tagging-policy"
 
 ```
+
 
 2. Assign Policy to the full subscription
 ```
@@ -39,8 +40,11 @@ az policy assignment show --name tagging-policy
 ```
 
 3. How to build the image using Packer
-```
-packer build server.json
+``` 
+packer build  \ 
+    -var "image_name=pepe" \
+    -var "resource_group_name=udacity" \
+    -var "created_by=IvanG" server.json    
 ```
 
 5. How to build the IaC with Terraform
@@ -69,7 +73,7 @@ terraform destroy
 - `virtual_machines_count:` Number of VMs deployment 
 
 ##Customize packer
-`server.json` provides the following customizable variables:
+`server.json` provides the following customizable variables via `environment variable` or `packer -var 'key=value'`:
 - `ARM_CLIENT_ID:` Azure client ID
 - `ARM_CLIENT_SECRET:` Azure Client Secret
 - `ARM_SUBSCRIPTION_ID:` Azure Subscription ID
@@ -88,3 +92,25 @@ terraform destroy
 - LoadBalancer with backend address pool and andress pool association for the network interface and load balancer.
 - Managed disks for the VMs.
 
+### Helpers
+1. Policy definition and assignment
+```
+./ps/create-policy.ps1
+
+```
+
+2. Create VM image with packer 
+```
+./ps/create-packer.ps1
+
+```
+
+3. Terraform create & destroy
+```
+./ps/terraform.ps1
+
+```
+
+
+### Screenshots
+![require_tag_policy](./screenshot/require_tag_policy.png)
