@@ -31,3 +31,8 @@ variable "packer_resource_group_name" {
   description = "Name of the resource group in which the Packer image will be created"
   default     = "udacity"
 }
+
+variable "virtual_machines_count" {
+  description = "Number of VMs"
+  default = 2
+}
