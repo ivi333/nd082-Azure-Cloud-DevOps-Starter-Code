@@ -20,7 +20,7 @@ variables:
   environmentName: 'udacity-gomezlivan'
 
   # Project root folder. Point to the folder containing manage.py file.
-  projectRoot: $(System.DefaultWorkingDirectory)./C2-AgileDevelopmentwithAzure/azure_pipelines_exercise/starter_files
+  projectRoot: $(System.DefaultWorkingDirectory)/C2-AgileDevelopmentwithAzure/azure_pipelines_exercise/starter_files
 
   # Python version: 3.7
   pythonVersion: '3.7'
